@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netwerken: jouw stappenplan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#085041;
+    --amber:#BA7517;--amber-light:#FAEEDA;
+    --coral:#D85A30;--coral-light:#FAECE7;
+    --purple:#534AB7;--purple-light:#EEEDFE;
+    --blue:#185FA5;--blue-light:#E6F1FB;
+    --pink:#993556;--pink-light:#FBEAF0;
+    --text:#1a1a1a;--text-muted:#5a5a5a;
+    --bg:#fafaf8;--white:#ffffff;--border:#e0ddd6;--radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .page{display:none;} .page.active{display:block;}
+  nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+  .nav-logo{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--teal-dark);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .nav-steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+  .nav-steps::-webkit-scrollbar{display:none;}
+  .nav-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;padding:6px 10px;border-radius:8px;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+  .nav-btn:hover{background:var(--teal-light);color:var(--teal-dark);}
+  .nav-btn.active{background:var(--teal-light);color:var(--teal-dark);font-weight:500;}
+  .hero{max-width:780px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center;}
+  .hero-tag{display:inline-block;background:var(--teal-light);color:var(--teal-dark);font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;}
+  .hero h1{font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:600;line-height:1.15;margin-bottom:1.25rem;}
+  .hero h1 em{font-style:normal;color:var(--teal);}
+  .hero p{font-size:17px;color:var(--text-muted);max-width:520px;margin:0 auto 3rem;line-height:1.7;}
+  .steps-grid{max-width:860px;margin:0 auto;padding:0 2rem 5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+  .step-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:left;position:relative;overflow:hidden;}
+  .step-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.07);}
+  .step-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--radius) var(--radius) 0 0;}
+  .step-card[data-color="teal"]::before{background:var(--teal);}
+  .step-card[data-color="amber"]::before{background:var(--amber);}
+  .step-card[data-color="coral"]::before{background:var(--coral);}
+  .step-card[data-color="purple"]::before{background:var(--purple);}
+  .step-card[data-color="blue"]::before{background:var(--blue);}
+  .step-card[data-color="pink"]::before{background:var(--pink);}
+  .step-number{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;}
+  .step-card[data-color="teal"] .step-number{color:var(--teal);}
+  .step-card[data-color="amber"] .step-number{color:var(--amber);}
+  .step-card[data-color="coral"] .step-number{color:var(--coral);}
+  .step-card[data-color="purple"] .step-number{color:var(--purple);}
+  .step-card[data-color="blue"] .step-number{color:var(--blue);}
+  .step-card[data-color="pink"] .step-number{color:var(--pink);}
+  .step-card h2{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:.5rem;line-height:1.3;}
+  .step-card p{font-size:14px;color:var(--text-muted);line-height:1.6;}
+  .step-arrow{display:inline-block;margin-top:1rem;font-size:13px;font-weight:500;}
+  .step-card[data-color="teal"] .step-arrow{color:var(--teal);}
+  .step-card[data-color="amber"] .step-arrow{color:var(--amber);}
+  .step-card[data-color="coral"] .step-arrow{color:var(--coral);}
+  .step-card[data-color="purple"] .step-arrow{color:var(--purple);}
+  .step-card[data-color="blue"] .step-arrow{color:var(--blue);}
+  .step-card[data-color="pink"] .step-arrow{color:var(--pink);}
+  .step-page{max-width:780px;margin:0 auto;padding:3rem 2rem 5rem;}
+  .back-btn{background:none;border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-muted);cursor:pointer;padding:7px 14px;border-radius:8px;margin-bottom:2rem;display:inline-flex;align-items:center;gap:6px;transition:background .15s;}
+  .back-btn:hover{background:var(--teal-light);color:var(--teal-dark);}
+  .step-header{margin-bottom:2.5rem;}
+  .step-badge{display:inline-block;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;padding:4px 14px;border-radius:20px;margin-bottom:1rem;}
+  .step-header h1{font-family:'Fraunces',serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:600;line-height:1.2;margin-bottom:.75rem;}
+  .step-header .subtitle{font-size:17px;color:var(--text-muted);line-height:1.7;}
+  .content-block{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.25rem;}
+  .content-block h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-bottom:.75rem;}
+  .content-block p{font-size:15px;color:var(--text-muted);line-height:1.75;margin-bottom:.75rem;}
+  .content-block p:last-child{margin-bottom:0;}
+  .content-block ul{padding-left:1.25rem;margin-top:.5rem;}
+  .content-block ul li{font-size:15px;color:var(--text-muted);line-height:1.7;margin-bottom:.4rem;}
+  .highlight-box{border-left:3px solid;border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:15px;line-height:1.7;}
+  .assignments-title{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin:2.5rem 0 1rem;}
+  .assignment-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;}
+  .assignment-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+  .assignment-card h4{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:.6rem;}
+  .assignment-card p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:.5rem;}
+  .assignment-card ul{padding-left:1.2rem;margin-top:.4rem;}
+  .assignment-card ul li{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:.3rem;}
+  .next-step-bar{margin-top:3rem;background:var(--teal-light);border-radius:var(--radius);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+  .next-step-bar span{font-size:14px;color:var(--teal-dark);}
+  .next-btn{background:var(--teal);color:white;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:9px 20px;border-radius:9px;cursor:pointer;transition:background .15s;white-space:nowrap;}
+  .next-btn:hover{background:var(--teal-dark);}
+  .c-teal{color:var(--teal-dark);background:var(--teal-light);}
+  .c-amber{color:#633806;background:var(--amber-light);}
+  .c-coral{color:#4A1B0C;background:var(--coral-light);}
+  .c-purple{color:#26215C;background:var(--purple-light);}
+  .c-blue{color:#042C53;background:var(--blue-light);}
+  .c-pink{color:#4B1528;background:var(--pink-light);}
+  .hl-teal{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark);}
+  .hl-amber{border-color:var(--amber);background:var(--amber-light);color:#633806;}
+  .hl-coral{border-color:var(--coral);background:var(--coral-light);color:#4A1B0C;}
+  .hl-purple{border-color:var(--purple);background:var(--purple-light);color:#26215C;}
+  .hl-blue{border-color:var(--blue);background:var(--blue-light);color:#042C53;}
+  .hl-pink{border-color:var(--pink);background:var(--pink-light);color:#4B1528;}
+  @media(max-width:600px){
+    .steps-grid{grid-template-columns:1fr;}
+    .next-step-bar{flex-direction:column;align-items:flex-start;}
+    nav{padding:0 1rem;}
+    .hero,.steps-grid,.step-page{padding-left:1rem;padding-right:1rem;}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Netwerken: jouw stappenplan</div>
+  <div class="nav-steps">
+    <button class="nav-btn" onclick="showPage('step1')">1. Wat is netwerken?</button>
+    <button class="nav-btn" onclick="showPage('step2')">2. Mijn netwerk</button>
+    <button class="nav-btn" onclick="showPage('step3')">3. Wie ben jij?</button>
+    <button class="nav-btn" onclick="showPage('step4')">4. Wat heb jij te bieden?</button>
+    <button class="nav-btn" onclick="showPage('step5')">5. Netwerketiquette</button>
+    <button class="nav-btn" onclick="showPage('step6')">6. Contacten onderhouden</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="hero">
+    <div class="hero-tag">Hand-out netwerken</div>
+    <h1>Netwerken:<br><em>jouw stappenplan</em></h1>
+    <p>Netwerken is meer dan visitekaartjes uitdelen. Het draait om echte verbindingen bouwen op een manier die bij jou past. Doorloop de 6 stappen en ontdek hoe jij dit kunt inzetten.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card" data-color="teal" onclick="showPage('step1')">
+      <div class="step-number">Stap 1</div>
+      <h2>Wat is netwerken?</h2>
+      <p>Ontdek wat netwerken echt inhoudt en waarom het verder gaat dan zakelijk contact leggen.</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+    <div class="step-card" data-color="amber" onclick="showPage('step2')">
+      <div class="step-number">Stap 2</div>
+      <h2>Wat is mijn netwerk?</h2>
+      <p>Breng je huidige netwerk in kaart. Wat wil je ermee en wie zijn belangrijk voor jou?</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+    <div class="step-card" data-color="coral" onclick="showPage('step3')">
+      <div class="step-number">Stap 3</div>
+      <h2>Wie ben jij?</h2>
+      <p>Leer jezelf kennen als netwerker. Wat is jouw stijl en hoe kom je over op anderen?</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+    <div class="step-card" data-color="purple" onclick="showPage('step4')">
+      <div class="step-number">Stap 4</div>
+      <h2>Wat heb jij te bieden?</h2>
+      <p>Netwerken draait om geven en ontvangen. Ontdek jouw kwaliteiten en de kracht van gunnen.</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+    <div class="step-card" data-color="blue" onclick="showPage('step5')">
+      <div class="step-number">Stap 5</div>
+      <h2>Netwerketiquette &amp; gesprekken voeren</h2>
+      <p>Stel doelen, leer gesprekken aanknopen en wat netwerketiquette inhoudt.</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+    <div class="step-card" data-color="pink" onclick="showPage('step6')">
+      <div class="step-number">Stap 6</div>
+      <h2>Contacten onderhouden</h2>
+      <p>Je netwerk inzetten en laten groeien, offline en online via LinkedIn.</p>
+      <div class="step-arrow">Lees meer &rarr;</div>
+    </div>
+  </div>
+</div>
+
+<!-- STAP 1 -->
+<div id="step1" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-teal">Stap 1</div>
+    <h1>Wat is netwerken?</h1>
+    <p class="subtitle">Iedere keer dat je met iemand in gesprek gaat en informatie uitwisselt, ben je al aan het netwerken. Het is een vaardigheid die je overal en altijd inzet.</p>
+  </div>
+  <div class="content-block">
+    <h3>De kern van netwerken</h3>
+    <p>Netwerken is het leggen en onderhouden van relaties door contact te maken en informatie uit te wisselen. Het doel is niet om iets te halen, maar om waardevolle relaties op te bouwen waarbij geven en ontvangen centraal staan. Het effect is er vooral op de lange termijn.</p>
+    <p><em>"Netwerken is niets anders dan communiceren met de mensen waarnaar je gezond verstand je heen leidt."</em> &mdash; Rob van Eeden en Els Nijssen, Netwerken werkt</p>
+  </div>
+  <div class="highlight-box hl-teal">
+    <strong>Zakelijk netwerken</strong> kan op twee manieren: <strong>transactiegericht</strong> (snel resultaat, zoals een nieuwe baan vinden) of <strong>relationeel</strong> (vertrouwen opbouwen voor de lange termijn). Netwerkexperts zijn het erover eens dat goede relaties de basis vormen voor duurzaam succes.
+  </div>
+  <div class="content-block">
+    <h3>Sociaal kapitaal</h3>
+    <p>Door te netwerken bouw je sociaal kapitaal op: de waarde van je netwerk en de hulpbronnen waar je via anderen toegang toe hebt. Hoe groter je netwerk, hoe meer je dit merkt in de praktijk.</p>
+    <p>De theorie <em>Six Degrees of Separation</em> stelt dat iedereen met elkaar verbonden is via een klein aantal schakels. En <em>The Strength of Weak Ties</em> (Mark Granovetter, 1973) laat zien dat juist minder sterke, indirecte contacten vaak nieuwe kansen bieden.</p>
+  </div>
+  <div class="content-block">
+    <h3>Waar vindt netwerken plaats?</h3>
+    <p>Netwerken gebeurt niet alleen op formele bijeenkomsten. Het vindt overal plaats waar mensen met elkaar in contact komen: in de kantine, tijdens een stage, in een groepsapp. Hoe vaker je het doet, hoe beter het gaat.</p>
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 1</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--teal)">Opdracht 1 &mdash; Gesprek aanknopen</div>
+    <h4>Stap op een onbekende af</h4>
+    <p>Kies zelf een geschikte gelegenheid en stap deze week op een onbekend persoon af om een gesprek te beginnen. Evalueer het gesprek daarna:</p>
+    <ul>
+      <li>Ging het goed? Wat vond je het moeilijkst?</li>
+      <li>Wat was je openingszin? Was die geslaagd?</li>
+      <li>Hoe voelde je je?</li>
+      <li>Wat neem je mee uit het gesprek?</li>
+      <li>Wat zou je de volgende keer anders doen?</li>
+    </ul>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--teal)">Opdracht 2 &mdash; Lichaamstaal lezen</div>
+    <h4>Observeer sociale interacties</h4>
+    <p>Houd de komende week sociale interacties in jouw directe omgeving in de gaten om bewuster te worden van lichaamstaal:</p>
+    <ul>
+      <li>Welke gesprekken vinden mensen prettig en welke niet?</li>
+      <li>Welke gedragingen of mimiek verraden of iemand zich op zijn gemak voelt?</li>
+      <li>Wat kun je hiervan leren voor je eigen manier van contact maken?</li>
+    </ul>
+  </div>
+  <div class="next-step-bar">
+    <span>Klaar met stap 1? <strong>Ga verder naar jouw eigen netwerk.</strong></span>
+    <button class="next-btn" onclick="showPage('step2')">Stap 2: Mijn netwerk &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- STAP 2 -->
+<div id="step2" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-amber">Stap 2</div>
+    <h1>Wat is mijn netwerk?</h1>
+    <p class="subtitle">Breng in kaart wie er al in jouw netwerk zitten, wat je ermee wilt bereiken en wat voor jou belangrijk is.</p>
+  </div>
+  <div class="content-block">
+    <h3>Je netwerk in kaart brengen</h3>
+    <p>Je netwerk bestaat uit verschillende ringen: mensen die je goed kent (eerstegraads) en mensen die je via anderen kent (tweedegraads). Juist die zwakkere verbindingen bieden vaak verrassende kansen.</p>
+    <p>Denk aan de verschillende omgevingen waar je contacten opdoet: studie, stage, sport, vrijwilligerswerk, familie. Al die plekken zijn onderdeel van jouw netwerk.</p>
+  </div>
+  <div class="highlight-box hl-amber">
+    <strong>Koester je netwerk.</strong> Hulp komt vaak uit verrassende hoeken. Een klein deel van je relaties &mdash; ongeveer 20% &mdash; bepaalt het grootste deel van je succes. Deze mensen zijn jouw aandacht waard.
+  </div>
+  <div class="content-block">
+    <h3>Wat wil jij met je netwerk?</h3>
+    <p>Stel jezelf de vraag: waarvoor wil ik mijn netwerk inzetten? Denk aan het vinden van een stage, kennis opdoen, samenwerken of groeien als persoon. Wie heb je daarvoor nodig en wie heb je al in je netwerk?</p>
+    <p>Netwerken heeft ook waarde als je niks commercieels doet. In een tijd waarin mensen minder zijn aangesloten bij gemeenschappen, biedt een netwerk sociale verbinding en ondersteuning.</p>
+  </div>
+  <div class="content-block">
+    <h3>Wat is belangrijk voor jou?</h3>
+    <p>Denk na over wat jij in relaties waardeert: betrouwbaarheid, gedeelde interesses, eerlijkheid of diversiteit in achtergrond. Een sterk netwerk is niet per se groot &mdash; het is waardevol.</p>
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 2</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--amber)">Opdracht 1 &mdash; Breng je netwerk in kaart</div>
+    <h4>Netwerkkaart maken</h4>
+    <p>Teken of schrijf je netwerk uit in ringen: eerstegraads (directe contacten) en tweedegraads (via anderen). Noteer bij elke ring ook in welke context je deze mensen kent.</p>
+    <ul>
+      <li>Welke groepen zijn sterk vertegenwoordigd?</li>
+      <li>Welke groepen ontbreken die nuttig zouden zijn?</li>
+      <li>Wie wil je beter leren kennen?</li>
+    </ul>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--amber)">Opdracht 2 &mdash; Netwerkvraag formuleren</div>
+    <h4>Wat zoek ik?</h4>
+    <p>Formuleer een heldere netwerkvraag die begint met: <em>"Ik ben op zoek naar iemand die..."</em> Maak de vraag zo concreet en eenvoudig mogelijk. Deel hem daarna in een online groep of op social media.</p>
+    <ul>
+      <li>Was je oproep concreet genoeg?</li>
+      <li>Wat voor reacties kreeg je?</li>
+    </ul>
+  </div>
+  <div class="next-step-bar">
+    <span>Klaar met stap 2? <strong>Ontdek wie jij bent als netwerker.</strong></span>
+    <button class="next-btn" onclick="showPage('step3')">Stap 3: Wie ben jij? &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- STAP 3 -->
+<div id="step3" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-coral">Stap 3</div>
+    <h1>Wie ben jij?</h1>
+    <p class="subtitle">Effectief netwerken begint bij jezelf kennen. Hoe kom jij over? En welke netwerkstijl past bij jou?</p>
+  </div>
+  <div class="content-block">
+    <h3>Jouw netwerkstijl (Ivan Misner)</h3>
+    <p>Er is niet één juiste manier van netwerken. Ivan Misner onderscheidt vier stijlen:</p>
+    <ul>
+      <li><strong>Aanpakker</strong> &mdash; gericht op snel resultaat, bezoekt events om nieuwe kansen te creeren.</li>
+      <li><strong>Promotor</strong> &mdash; houdt van veel ijzers in het vuur, wil gezien worden en geniet van het contact zelf.</li>
+      <li><strong>Verzorger</strong> &mdash; goede luisteraar, verdiept relaties, heeft een hecht netwerk om zich heen.</li>
+      <li><strong>Onderzoeker</strong> &mdash; uit op kennis en informatie, goede gesprekspartner, stelt diepgaande vragen.</li>
+    </ul>
+  </div>
+  <div class="content-block">
+    <h3>Introvert of extravert?</h3>
+    <p>Beide types kunnen goed netwerken, op hun eigen manier. (Donna Fisher)</p>
+    <ul>
+      <li><strong>Introvert:</strong> Laad jezelf op op jouw manier. Schitter tijdens een-op-een gesprekken en gebruik online platforms.</li>
+      <li><strong>Extravert:</strong> Doe soms een stapje terug. Sta open voor de ander, stel vragen en luister echt.</li>
+    </ul>
+  </div>
+  <div class="highlight-box hl-coral">
+    <strong>Zelfreflectie is cruciaal.</strong> Denk na over hoe jij overkomt op anderen. Iemand die onzeker is, straalt dat onbewust uit. Jouw houding en zelfkennis zijn onderdeel van jouw netwerkstijl.
+  </div>
+  <div class="content-block">
+    <h3>Je kort voorstellen</h3>
+    <p>Weet wie je bent en waar je voor staat, zodat anderen je snel begrijpen. Denk na over een korte, heldere introductie: wie ben ik, wat doe ik, wat zoek ik? Geen lang verhaal, maar persoonlijk en helder.</p>
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 3</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--coral)">Opdracht 1 &mdash; Gespreksvaardigheden oefenen</div>
+    <h4>De LSD-techniek toepassen</h4>
+    <p>LSD staat voor Luisteren, Samenvatten en Doorvragen. Pas dit toe wanneer iemand je iets vertelt. Doe dit bij minimaal 3 verschillende personen en beantwoord daarna:</p>
+    <ul>
+      <li>Hoe heb je het gebruik van LSD ervaren?</li>
+      <li>Wat was het effect op het gesprek?</li>
+      <li>Wat lukte goed, en wat vond je lastig?</li>
+    </ul>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--coral)">Opdracht 2 &mdash; Jouw netwerkstijl bepalen</div>
+    <h4>Welke stijl past bij jou?</h4>
+    <p>Lees de vier stijlen van Misner opnieuw en schrijf op welke het beste bij jou past. Onderbouw je keuze met concrete voorbeelden uit je eigen gedrag.</p>
+    <ul>
+      <li>In welke situaties voel jij je het sterkst?</li>
+      <li>Waar wil je nog in groeien?</li>
+      <li>Hoe ga je netwerken op een manier die bij jou past?</li>
+    </ul>
+  </div>
+  <div class="next-step-bar">
+    <span>Klaar met stap 3? <strong>Ontdek wat jij te bieden hebt.</strong></span>
+    <button class="next-btn" onclick="showPage('step4')">Stap 4: Wat heb jij te bieden? &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- STAP 4 -->
+<div id="step4" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-purple">Stap 4</div>
+    <h1>Wat heb jij te bieden?</h1>
+    <p class="subtitle">Je hebt altijd iets te bieden. Netwerken draait om geven en ontvangen &mdash; en wie geeft, bouwt waardevolle relaties op.</p>
+  </div>
+  <div class="content-block">
+    <h3>De kracht van geven</h3>
+    <p>Netwerken is geen eenrichtingsverkeer. Door anderen te helpen, breng je een proces van wederkerigheid op gang. Kleine gebaren &mdash; acts of kindness &mdash; kunnen al een groot effect hebben.</p>
+    <p>Investeer aandacht, tijd en energie in je relaties. Vraag jezelf bij elke ontmoeting af hoe je de ander een plezier kunt doen en handel daarnaar.</p>
+  </div>
+  <div class="content-block">
+    <h3>Wat heb ik in de aanbieding?</h3>
+    <p>Neem de tijd om na te denken over wat jij bijdraagt aan anderen:</p>
+    <ul>
+      <li>Waar ben ik goed in?</li>
+      <li>Waar weet ik veel van?</li>
+      <li>Wat vind ik fijn om te doen?</li>
+      <li>Wie kan ik helpen met mijn kwaliteiten?</li>
+      <li>Welk probleem los ik op en welke waarde voeg ik toe?</li>
+    </ul>
+  </div>
+  <div class="highlight-box hl-purple">
+    <strong>De gunfactor.</strong> Mensen met een hoge gunfactor geven anderen een goed gevoel, wekken vertrouwen en zijn authentiek. Het grootste compliment is een doorverwijzing &mdash; iemand die jou aanbeveelt bij anderen.
+  </div>
+  <div class="content-block">
+    <h3>Bouwen aan vertrouwen</h3>
+    <p>Een waardevol netwerk bouw je niet in een dag. Een paar bouwstenen:</p>
+    <ul>
+      <li>Wees authentiek &mdash; jij bent wie je bent, accepteer ook anderen zoals ze zijn.</li>
+      <li>Kijk naar gedeelde waarden &mdash; die vormen de basis van elke goede relatie.</li>
+      <li>Stel je soms kwetsbaar op &mdash; dat hoort bij authenticiteit.</li>
+      <li>Kom afspraken na en roddel niet over anderen.</li>
+      <li>Koppel mensen aan elkaar wanneer je een match ziet.</li>
+      <li>Heb geen verwachtingen &mdash; niemand is jou iets verplicht.</li>
+    </ul>
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 4</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--purple)">Opdracht 1 &mdash; Een netwerkgesprek voeren</div>
+    <h4>Gesprek over jouw carriere</h4>
+    <p>Kies iemand uit je persoonlijke kring om een netwerkgesprek mee te voeren. Neem als onderwerp jouw toekomstplannen of carriere. Kies iemand van wie je eerlijke feedback kunt verwachten.</p>
+    <ul>
+      <li>Hoe vond je het zelf gaan? Wat was moeilijk, wat ging goed?</li>
+      <li>Vraag de ander om feedback: wat ging goed en wat kan beter?</li>
+    </ul>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--purple)">Opdracht 2 &mdash; Jouw aanbod formuleren</div>
+    <h4>Wat breng jij mee?</h4>
+    <p>Schrijf een korte elevator pitch over jezelf als netwerker: wie ben je, wat zijn je kwaliteiten en wat kun je voor anderen betekenen? Maak hem persoonlijk en authentiek.</p>
+    <p>Test je pitch: vertel hem aan twee mensen en vraag of het klopt met hoe zij jou ervaren.</p>
+  </div>
+  <div class="next-step-bar">
+    <span>Klaar met stap 4? <strong>Leer de spelregels van netwerken.</strong></span>
+    <button class="next-btn" onclick="showPage('step5')">Stap 5: Netwerketiquette &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- STAP 5 -->
+<div id="step5" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-blue">Stap 5</div>
+    <h1>Netwerketiquette &amp; een gesprek voeren</h1>
+    <p class="subtitle">Stel je doel op voor je een bijeenkomst ingaat. Leer hoe je gesprekken aanknopen, gaande houdt en wie je daarvoor nodig hebt.</p>
+  </div>
+  <div class="content-block">
+    <h3>Bereid je voor</h3>
+    <p>Goede netwerkers gaan niet zomaar ergens naartoe. Stel jezelf van tevoren twee vragen: wat wil ik uit dit gesprek of deze bijeenkomst halen? En wie wil ik spreken? Bereid ook een korte pitch voor: wie ben je, wat doe je en wat zoek je?</p>
+  </div>
+  <div class="content-block">
+    <h3>Hoe knoop je een gesprek aan?</h3>
+    <p>Zie je mensen luchtiger kletsen? Loop naar ze toe. Is er geen opening? Vat dat niet persoonlijk op en ga verder. Maak ongedwongen contact &mdash; er is altijd iets te benoemen. Vraag niet meteen om een gunst, maar vraag om advies: mensen laten graag hun expertise zien.</p>
+    <p>Handige gespreksopeners (Bob Burg, Endless Referrals, 2005):</p>
+    <ul>
+      <li>Hoe ben jij ooit gestart?</li>
+      <li>Wat vind je het allerleukst aan je werk?</li>
+      <li>Welk advies zou jij geven aan starters in jouw vakgebied?</li>
+      <li>Welke grote veranderingen zie jij in jouw sector?</li>
+    </ul>
+  </div>
+  <div class="content-block">
+    <h3>Netwerketiquette</h3>
+    <p>Goede netwerkers bewegen zo vanzelfsprekend in een groep dat het nooit opvalt dat ze aan het werk zijn. (Donna Fisher, Persoonlijk netwerken, 2002)</p>
+    <ul>
+      <li>Begroet de mensen om je heen &mdash; laat merken dat je ze ziet.</li>
+      <li>Geef een goede handdruk &mdash; je eerste kans om je persoonlijkheid over te brengen.</li>
+      <li>Stel mensen aan elkaar voor als je een match ziet.</li>
+      <li>Noem mensen bij hun naam zodra je die weet.</li>
+      <li>Wees niet bang om een gesprek netjes af te ronden: "Leuk dat ik je heb ontmoet!"</li>
+    </ul>
+  </div>
+  <div class="highlight-box hl-blue">
+    <strong>Dit doe je liever niet:</strong> doen alsof je geinteresseerd bent, roddelen, met visitekaartjes strooien, lang over jezelf praten of een belofte om contact op te nemen niet nakomen.
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 5</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--blue)">Opdracht 1 &mdash; Netwerkvraag uitzetten</div>
+    <h4>Wie heb ik nodig?</h4>
+    <p>Pak je netwerkvraag uit stap 2 erbij en denk na over wie jou kan helpen:</p>
+    <ul>
+      <li>Welke beroepen of sectoren zijn relevant?</li>
+      <li>Schrijf drie mensen op die jouw vraag kunnen beantwoorden of je verder helpen.</li>
+      <li>Bedenk hoe goed je ze kent en wat ze in hun eigen netwerk hebben.</li>
+      <li>Benader er een van deze week.</li>
+    </ul>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--blue)">Opdracht 2 &mdash; Ga naar een netwerkbijeenkomst</div>
+    <h4>Ervaring in de praktijk</h4>
+    <p>Zoek via Meetup.com of via je opleiding een bijeenkomst en ga erheen. Bereid je voor: stel een doel, bedenk een openingszin en houd je pitch klaar.</p>
+    <ul>
+      <li>Met hoeveel nieuwe mensen heb je gesproken?</li>
+      <li>Wat ging goed en wat was lastig?</li>
+      <li>Heb je contactgegevens uitgewisseld of een vervolgafspraak gemaakt?</li>
+    </ul>
+  </div>
+  <div class="next-step-bar">
+    <span>Klaar met stap 5? <strong>Leer hoe je je netwerk levend houdt.</strong></span>
+    <button class="next-btn" onclick="showPage('step6')">Stap 6: Contacten onderhouden &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- STAP 6 -->
+<div id="step6" class="page">
+<div class="step-page">
+  <button class="back-btn" onclick="showPage('home')">&larr; Terug naar overzicht</button>
+  <div class="step-header">
+    <div class="step-badge c-pink">Stap 6</div>
+    <h1>Contacten onderhouden</h1>
+    <p class="subtitle">Een netwerk opbouwen is een ding &mdash; het laten groeien en inzetten vraagt om continue aandacht, offline en online.</p>
+  </div>
+  <div class="content-block">
+    <h3>Blijf in beeld</h3>
+    <p>Persoonlijk contact is een succesfactor voor netwerken. Zorg altijd voor een vervolgactie na een gesprek: een bedankje, een vraag of een bericht. Geef complimenten en reageer op anderen.</p>
+    <ul>
+      <li>Laat van je horen &mdash; mensen onthouden wie ze zien en spreken.</li>
+      <li>Breng mensen in contact met elkaar wanneer je een match ziet.</li>
+      <li>Deel kennis en inzichten &mdash; zo word je een waardevolle schakel in je netwerk.</li>
+    </ul>
+  </div>
+  <div class="highlight-box hl-pink">
+    <strong>Vragen stellen aan je netwerk</strong> is pas effectief wanneer je voldoende vertrouwen hebt opgebouwd. Vanuit een sterk netwerk komen ook ongelijkte dingen op je af &mdash; kansen die je niet had verwacht.
+  </div>
+  <div class="content-block">
+    <h3>Online netwerken &mdash; 7 tips voor LinkedIn</h3>
+    <ul>
+      <li>Bekijk je tijdlijn regelmatig en reageer op updates van je contacten.</li>
+      <li>Beantwoord berichten of voeg ze toe aan je takenlijst.</li>
+      <li>Plaats regelmatig een statusupdate en tag mensen waarmee je hebt samengewerkt.</li>
+      <li>Doe mee aan groepsdiscussies en zoek nieuwe groepen in jouw vakgebied.</li>
+      <li>Ga op zoek naar nieuwe contacten en stuur een persoonlijke uitnodiging.</li>
+      <li>Beveel mensen aan of onderschrijf hun vaardigheden &mdash; vraag ook of zij jou willen aanbevelen.</li>
+      <li>Deel nieuwtjes die voor jouw netwerk interessant zijn.</li>
+    </ul>
+  </div>
+  <div class="content-block">
+    <h3>Authentiek online</h3>
+    <p>Online netwerken werkt het best als je het op dezelfde manier doet als offline: persoonlijk, oprecht en met aandacht voor de ander. Stuur geen standaardberichten &mdash; mensen willen geen nummer zijn.</p>
+  </div>
+  <div class="assignments-title">Opdrachten bij stap 6</div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--pink)">Opdracht 1 &mdash; Contacten onderhouden</div>
+    <h4>Hoe onderhoud jij je netwerk?</h4>
+    <p>Ga na hoe je nu je contacten onderhoudt, zakelijk en prive. Maak een lijstje met drie positieve en drie negatieve voorbeelden van hoe jij contact onderhoudt.</p>
+    <p>Formuleer daarna twee concrete leerpunten en bedenk bij elk punt een actie die je de komende week uitvoert om je netwerk beter te onderhouden.</p>
+  </div>
+  <div class="assignment-card">
+    <div class="assignment-label" style="color:var(--pink)">Opdracht 2 &mdash; Terugblik op je netwerk</div>
+    <h4>Wat heb je geleerd?</h4>
+    <p>Doorloop de zes stappen nog eens in gedachten. Beantwoord de volgende vragen:</p>
+    <ul>
+      <li>Is je kijk op netwerken veranderd na het doorlopen van de stappen?</li>
+      <li>Wat ga je anders aanpakken?</li>
+      <li>Welke doelen stel je voor jezelf op het gebied van netwerken?</li>
+      <li>Welke behoefte heb je nog?</li>
+    </ul>
+  </div>
+  <div class="next-step-bar">
+    <span>Je hebt alle stappen doorlopen. <strong>Goed bezig!</strong></span>
+    <button class="next-btn" onclick="showPage('home')">&larr; Terug naar het overzicht</button>
+  </div>
+</div>
+</div>
+
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  var map={step1:0,step2:1,step3:2,step4:3,step5:4,step6:5};
+  if(id in map) document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+}
+</script>
+</body>
+</html>
